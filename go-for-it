@@ -1,0 +1,21 @@
+#!/bin/bash
+URL=$1
+TMP=$( mktemp -d /tmp/go-for-it-XXXX )
+trap 'rm -rf $TMP' EXIT
+DIR=$(pwd)
+cd $TMP
+curl -s -O $URL
+SCRIPT=$TMP/$( ls )
+cd $DIR
+if [ ${SCRIPT##*.} == 'asc' ] ; then
+ if gpg --verify $SCRIPT > /dev/null 2> /dev/null ; then
+   sed -e '1,3d' -e '/-----BEGIN PGP SIGNATURE-----/,$d' $SCRIPT | bash -
+ else
+   echo "ERROR: Signature check failed."
+   gpg --verify $SCRIPT
+   exit 1
+ fi
+else
+  echo 'ERROR: The script's name must end in ".sh.asc"'
+  exit 1
+fi

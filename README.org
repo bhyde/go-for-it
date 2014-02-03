@@ -1,0 +1,42 @@
+* Introduction
+
+One way to make it easier to install software is to provide a script
+that does the install.  You then advise your users to do "just":
+
+  curl http://example.com/install-my-stuff.sh | bash -
+
+And with luck they are all set.
+
+That of course is pretty risky.
+
+Go-for-it provides a scheme to make this a bit safer.  We assume
+that the users have installed GnuPG and we ask them to add our
+signing key to their keyring.  Our new instructions look like this:
+
+  ./go-for-it http://example.com/install-my-stuff.sh.asc
+
+and when the user runs that the go-for-it script checks the signature
+on the shell script before running it.
+
+* Usage -- running scripts.
+
+Go-for-it is a bash script that will fetch another script via curl and
+then execute it.  But these scripts are signed (and in fact they can
+not be executed directly).
+
+This script's filename should end with either ".sh" ".sh.asc".  If the
+later it's signature (ala gpg's --clearsign) will be checked before
+the actual script is recovered for execution.  You will need to have
+the key(s) that signed it on your gpg keyring.
+
+* Usage -- signing scripts
+
+If you have a foo.sh script which you wish to sign the command to do
+so is:
+
+  gpg --default-key go-for-it@example.com --clearsign test.sh
+
+Replace, if necessary, go-for-it@example.com with something to denote
+the key your using.  Or you can use that key, which is found in
+unsafe-signing-key-private.asc who passphrase is: go-for-it.
+
