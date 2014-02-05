@@ -1,5 +1,13 @@
 #!/bin/bash
 URL=$1
+if [ "x$URL" = x ] ; then
+  echo "Usage: $0 <url>"
+  exit 1
+fi
+if [ $(uid -u) -ne 0 ] ; then
+  echo "Must run as root."
+  exit 1
+fi
 TMP=$( mktemp -d /tmp/go-for-it-XXXX )
 trap 'rm -rf $TMP' EXIT
 DIR=$(pwd)
@@ -16,6 +24,6 @@ if [ ${SCRIPT##*.} == 'asc' ] ; then
    exit 1
  fi
 else
-  echo 'ERROR: The script's name must end in ".sh.asc"'
+  echo 'ERROR: The name of the script must end in ".sh.asc"'
   exit 1
 fi
